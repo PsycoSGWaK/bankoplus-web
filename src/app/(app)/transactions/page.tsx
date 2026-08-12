@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { getAccounts } from "@/lib/api/accounts";
 import { getCategories } from "@/lib/api/categories";
 import { getTransactions, updateTransactionCategory } from "@/lib/api/transactions";
@@ -59,6 +60,7 @@ export default function TransactionsPage() {
       setTransactions(
         (prev) => prev?.map((tx) => (tx.id === updated.id ? updated : tx)) ?? prev,
       );
+      toast.success("Catégorie mise à jour.");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erreur inattendue");
     } finally {

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { getAccounts } from "@/lib/api/accounts";
 import { importStatement } from "@/lib/api/import";
 import { ApiError } from "@/lib/api/client";
@@ -60,6 +61,13 @@ export default function ImportPage() {
       setResult(batch);
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
+      if (batch.status === "completed") {
+        toast.success(`${batch.importedRows} transactions importées.`);
+      } else if (batch.status === "partial") {
+        toast.warning(`${batch.importedRows}/${batch.totalRows} lignes importées, ${batch.failedRows} en échec.`);
+      } else {
+        toast.error("L'import a échoué.");
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erreur inattendue");
     } finally {
