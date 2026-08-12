@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { getCategories } from "@/lib/api/categories";
 import {
   deleteBudget,
@@ -94,6 +95,7 @@ export default function BudgetsPage() {
       });
       setFormLimit("");
       reload();
+      toast.success("Budget enregistré.");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erreur inattendue");
     } finally {
@@ -106,6 +108,7 @@ export default function BudgetsPage() {
     try {
       await deleteBudget(id);
       setProgress((prev) => prev?.filter((b) => b.id !== id) ?? prev);
+      toast.success("Budget supprimé.");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erreur inattendue");
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { createAccount, getAccounts } from "@/lib/api/accounts";
 import { ApiError } from "@/lib/api/client";
 import type { Account } from "@/types/api";
@@ -45,6 +46,7 @@ export default function AccountsPage() {
       setAccounts((prev) => (prev ? [...prev, account] : [account]));
       setLabel("");
       setBankName("");
+      toast.success(`Compte "${account.label}" créé.`);
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : "Erreur inattendue");
     } finally {

@@ -14,6 +14,23 @@ export class ApiError extends Error {
   }
 }
 
+export class NetworkError extends Error {
+  constructor() {
+    super("Impossible de contacter le serveur. Vérifie ta connexion et réessaie.");
+  }
+}
+
+// fetch() rejette avec une TypeError générique (serveur injoignable, DNS,
+// CORS...) plutôt qu'une réponse HTTP — on la traduit en erreur exploitable
+// par l'UI plutôt que de laisser planter silencieusement les appelants.
+async function safeFetch(input: string, init: RequestInit) {
+  try {
+    return await fetch(input, init);
+  } catch {
+    throw new NetworkError();
+  }
+}
+
 async function parseBody(response: Response) {
   const text = await response.text();
   return text ? JSON.parse(text) : null;
@@ -26,7 +43,7 @@ let refreshPromise: Promise<string> | null = null;
 
 export async function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
-    refreshPromise = fetch(`${API_URL}/auth/refresh`, {
+    refreshPromise = safeFetch(`${API_URL}/auth/refresh`, {
       method: "POST",
       credentials: "include",
     })
@@ -64,7 +81,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
   const finalBody = isFormData ? body : body !== undefined ? JSON.stringify(body) : undefined;
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await safeFetch(`${API_URL}${path}`, {
     ...rest,
     credentials: "include",
     headers: finalHeaders,
@@ -75,7 +92,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     try {
       const newToken = await refreshAccessToken();
       finalHeaders.set("Authorization", `Bearer ${newToken}`);
-      const retryResponse = await fetch(`${API_URL}${path}`, {
+      const retryResponse = await safeFetch(`${API_URL}${path}`, {
         ...rest,
         credentials: "include",
         headers: finalHeaders,
@@ -84,9 +101,12 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       if (!retryResponse.ok) throw new ApiError(await parseBody(retryResponse));
       return (await parseBody(retryResponse)) as T;
     } catch (err) {
-      // Hors de l'arbre React ici (module partagé), pas de useRouter disponible.
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      if (typeof window !== "undefined") window.location.href = "/login";
+      // Une session réellement expirée doit renvoyer au login ; une simple
+      // coupure réseau ne doit pas déconnecter l'utilisateur pour autant.
+      if (err instanceof ApiError && typeof window !== "undefined") {
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+        window.location.href = "/login";
+      }
       throw err;
     }
   }
