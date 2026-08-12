@@ -24,7 +24,7 @@ async function parseBody(response: Response) {
 // en cours pour que les requêtes concurrentes attendent le même refresh.
 let refreshPromise: Promise<string> | null = null;
 
-async function refreshAccessToken(): Promise<string> {
+export async function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
     refreshPromise = fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
