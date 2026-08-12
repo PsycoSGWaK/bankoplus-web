@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const LINKS = [
   { href: "/dashboard", label: "Tableau de bord" },
   { href: "/accounts", label: "Comptes" },
+  { href: "/import", label: "Import" },
 ];
 
 export function AppHeader() {
