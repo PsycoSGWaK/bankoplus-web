@@ -21,6 +21,7 @@ const LINKS = [
   { href: "/transactions", label: "Transactions" },
   { href: "/import", label: "Import" },
   { href: "/budgets", label: "Budgets" },
+  { href: "/categories", label: "Catégories" },
 ];
 
 export function AppHeader() {
