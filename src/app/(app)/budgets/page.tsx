@@ -160,42 +160,27 @@ export default function BudgetsPage() {
               {overview.isCurrentMonth ? " (en cours)" : ""}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Solde actuel</p>
-                <p className="font-medium">
-                  {overview.currentBalance !== null
-                    ? currencyFormatter.format(overview.currentBalance)
-                    : "Inconnu"}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Revenus (mois précédent)</p>
-                <p className="font-medium">{currencyFormatter.format(overview.totalIncome)}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Dépenses</p>
-                <p className="font-medium">{currencyFormatter.format(overview.totalExpenses)}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Dépenses projetées (fin de mois)</p>
-                <p className="font-medium">
-                  {currencyFormatter.format(overview.projectedExpensesMonthEnd)}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Solde projeté fin de mois</p>
-                <p className="font-medium">
-                  {currencyFormatter.format(overview.projectedBalance)}
-                </p>
-              </div>
+          <CardContent className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Revenus (mois précédent)</p>
+              <p className="font-medium">{currencyFormatter.format(overview.totalIncome)}</p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {overview.currentBalance !== null
-                ? "Solde actuel moins les factures fixes pas encore tombées — aucun revenu à venir n'est ajouté, il peut donc être inférieur au solde actuel."
-                : "Estimation grossière (revenus moins dépenses projetées) — définis un solde de référence sur au moins un compte pour un calcul plus précis."}
-            </p>
+            <div>
+              <p className="text-muted-foreground">Dépenses</p>
+              <p className="font-medium">{currencyFormatter.format(overview.totalExpenses)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Dépenses projetées (fin de mois)</p>
+              <p className="font-medium">
+                {currencyFormatter.format(overview.projectedExpensesMonthEnd)}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Solde projeté fin de mois</p>
+              <p className="font-medium">
+                {currencyFormatter.format(overview.projectedBalance)}
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
