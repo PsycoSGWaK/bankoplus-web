@@ -8,3 +8,10 @@ export function getAccounts() {
 export function createAccount(input: { label: string; bankName?: string; currency?: string }) {
   return api.post<Account>("/accounts", input);
 }
+
+export function updateAccountBalance(
+  id: string,
+  input: { referenceBalance: number; referenceDate: string },
+) {
+  return api.patch<Account>(`/accounts/${id}`, input);
+}
