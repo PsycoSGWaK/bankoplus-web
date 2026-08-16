@@ -40,7 +40,10 @@ export default function CategoriesPage() {
   const [kind, setKind] = useState<CategoryKind>("expense");
   const [creating, setCreating] = useState(false);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  // Chaîne vide (jamais undefined/null) pour que le Select reste contrôlé
+  // dès le premier rendu — Base UI avertit si un composant passe de
+  // non-contrôlé à contrôlé une fois les catégories chargées.
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [rules, setRules] = useState<CategoryRule[] | null>(null);
   const [keyword, setKeyword] = useState("");
   const [addingRule, setAddingRule] = useState(false);
@@ -49,7 +52,7 @@ export default function CategoriesPage() {
     getCategories()
       .then((cats) => {
         setCategories(cats);
-        setSelectedCategoryId((prev) => prev ?? (cats.length > 0 ? cats[0].id : null));
+        setSelectedCategoryId((prev) => prev || (cats.length > 0 ? cats[0].id : ""));
       })
       .catch((err) => setError(err instanceof ApiError ? err.message : "Erreur inattendue"));
   }
@@ -86,7 +89,7 @@ export default function CategoriesPage() {
     try {
       await deleteCategory(category.id);
       setCategories((prev) => prev?.filter((c) => c.id !== category.id) ?? prev);
-      if (selectedCategoryId === category.id) setSelectedCategoryId(null);
+      if (selectedCategoryId === category.id) setSelectedCategoryId("");
       toast.success(`Catégorie "${category.name}" supprimée.`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erreur inattendue");
@@ -214,8 +217,8 @@ export default function CategoriesPage() {
           <div className="flex flex-col gap-2">
             <Label>Catégorie</Label>
             <Select
-              value={selectedCategoryId ?? undefined}
-              onValueChange={(v) => setSelectedCategoryId(v)}
+              value={selectedCategoryId}
+              onValueChange={(v) => setSelectedCategoryId(v ?? "")}
             >
               <SelectTrigger className="w-full">
                 <SelectValue>
