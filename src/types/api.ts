@@ -40,6 +40,14 @@ export interface Account {
   label: string;
   bankName: string | null;
   currency: string;
+  // Solde connu à referenceDate, saisi manuellement — null tant que
+  // l'utilisateur ne l'a pas renseigné.
+  referenceBalance: number | null;
+  referenceDate: string | null;
+  // Calculé par l'API : referenceBalance + transactions depuis referenceDate.
+  // null si referenceBalance/referenceDate ne sont pas renseignés (solde
+  // inconnu, à ne pas confondre avec un solde de 0€).
+  currentBalance: number | null;
   createdAt: string;
 }
 
