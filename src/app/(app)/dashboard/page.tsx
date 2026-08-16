@@ -101,7 +101,17 @@ export default function DashboardPage() {
         </Alert>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <Card>
+          <CardContent className="py-4">
+            <p className="text-xs text-muted-foreground">Solde actuel</p>
+            <p className="text-lg font-semibold">
+              {overview?.currentBalance != null
+                ? currencyFormatter.format(overview.currentBalance)
+                : "Inconnu"}
+            </p>
+          </CardContent>
+        </Card>
         <Card>
           <CardContent className="py-4">
             <p className="text-xs text-muted-foreground">Revenus</p>

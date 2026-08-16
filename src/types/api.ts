@@ -89,13 +89,22 @@ export interface Category {
   name: string;
   kind: CategoryKind;
   userId: string | null;
+  // Facture qui tombe ~1x/mois (loyer, énergie, abonnement...) — change la
+  // façon dont le budget projette cette catégorie en fin de mois.
+  isFixedExpense: boolean;
   createdAt: string;
 }
+
+export type CategoryRuleDirection = "credit" | "debit";
 
 export interface CategoryRule {
   id: string;
   categoryId: string;
   keyword: string;
+  // Gardes optionnelles en plus du mot-clé : la règle ne s'applique que si
+  // le montant absolu dépasse minAmount et/ou si le sens correspond.
+  minAmount: number | null;
+  direction: CategoryRuleDirection | null;
   userId: string | null;
   createdAt: string;
 }
@@ -125,9 +134,16 @@ export interface BudgetsOverview {
   daysElapsed: number;
   daysInMonth: number;
   isCurrentMonth: boolean;
+  // Somme des currentBalance des comptes ayant une référence renseignée.
+  // null si aucun compte n'a de référence.
+  currentBalance: number | null;
   totalIncome: number;
   totalExpenses: number;
   projectedExpensesMonthEnd: number;
+  // "Combien il restera fin de mois" : basé sur currentBalance si connu
+  // (moins les factures fixes pas encore tombées, sans ajouter de revenu à
+  // venir — peut être inférieur à currentBalance, c'est voulu), sinon repli
+  // sur totalIncome - projectedExpensesMonthEnd (estimation grossière).
   projectedBalance: number;
 }
 
@@ -137,6 +153,7 @@ export interface BudgetSimulation {
   spentBeforePurchase: number;
   spentAfterPurchase: number;
   projectedMonthEndAfterPurchase: number;
+  projectedBalanceAfterPurchase: number;
   budgetLimit: number | null;
   wouldExceedBudget: boolean | null;
   wouldExceedProjectedBudget: boolean | null;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { InfoIcon } from "lucide-react";
 import { getCategories } from "@/lib/api/categories";
 import {
   deleteBudget,
@@ -20,6 +21,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -32,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const GLOBAL = "global";
 
@@ -159,10 +162,22 @@ export default function BudgetsPage() {
               Jour {overview.daysElapsed} sur {overview.daysInMonth}
               {overview.isCurrentMonth ? " (en cours)" : ""}
             </CardDescription>
+            <CardAction>
+              <Tooltip>
+                <TooltipTrigger className="text-muted-foreground hover:text-foreground">
+                  <InfoIcon className="size-4" />
+                  <span className="sr-only">À propos du solde projeté</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Solde actuel moins les factures fixes pas encore tombées — aucun revenu à venir
+                  n&apos;est ajouté, il peut donc être inférieur au solde actuel.
+                </TooltipContent>
+              </Tooltip>
+            </CardAction>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted-foreground">Revenus</p>
+              <p className="text-muted-foreground">Revenus (mois précédent)</p>
               <p className="font-medium">{currencyFormatter.format(overview.totalIncome)}</p>
             </div>
             <div>
@@ -176,7 +191,7 @@ export default function BudgetsPage() {
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Solde projeté</p>
+              <p className="text-muted-foreground">Solde projeté fin de mois</p>
               <p className="font-medium">
                 {currencyFormatter.format(overview.projectedBalance)}
               </p>
@@ -325,8 +340,12 @@ export default function BudgetsPage() {
                 {currencyFormatter.format(simResult.spentAfterPurchase)}
               </p>
               <p>
-                Projection fin de mois après achat :{" "}
+                Dépenses projetées fin de mois après achat :{" "}
                 {currencyFormatter.format(simResult.projectedMonthEndAfterPurchase)}
+              </p>
+              <p>
+                Solde projeté fin de mois après achat :{" "}
+                {currencyFormatter.format(simResult.projectedBalanceAfterPurchase)}
               </p>
               {simResult.budgetLimit === null ? (
                 <p>Aucun budget défini pour cette catégorie.</p>
